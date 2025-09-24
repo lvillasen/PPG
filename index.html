@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta
+      name="viewport"
+      content="width=device-width, user-scalable=no,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0"
+    />
+    <title>PPG</title>
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
+    </script>
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({ TeX: { extensions: ["color.js"] }});
+    </script>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+    <script
+      type="text/javascript"
+      src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"
+    ></script>
+    <script src="https://rawgit.com/corbanbrook/dsp.js/master/dsp.js"></script>
+
+    <link rel="stylesheet" href="./PPG.css" />
+  </head>
+  <body>
+    <div
+      class="block_container"
+      style="background-color: #00b5e2; margin-left: 10%; margin-right: 10%"
+    >
+      <p></p>
+      <p></p>
+      <br />
+
+      <p></p>
+      <p></p>
+
+      <h1>Fotopletismógrafo</h1>
+      <h2>CIIEC-BUAP</h2>
+      <p style="font-size: 30px; margin-left: 80%">22 de Septiembre, 2025</p>
+      <p style="font-size: 20px; margin-left: 80%">
+        <a href="https://github.com/lvillasen/PPG">Código Fuente</a>
+      </p>
+      <hr />
+      <h3>
+        Un fotopletismógrafo (PPG, por sus siglas en inglés:
+        Photoplethysmograph) es un dispositivo óptico que mide los cambios en el
+        volumen sanguíneo en los tejidos, generalmente en la piel, usando luz.
+      </h3>
+      <hr />
+
+      <button
+        class="new_styled"
+        id="toggleAbout"
+        aria-pressed="false"
+        onclick="aboutBlock()"
+      >
+        ¿Cómo Funciona y para qué Sirve?
+      </button>
+      <br />
+      <div id="aboutBlock">
+        <center>
+          <img src="example.png" style="width: 80%" />
+        </center>
+        <center><p></p>Ejemplo de visualización de un pletismógrafo tomado con esta aplicación web.</p></center>
+
+
+        <h3>Su funcionamiento es el siguiente:</h3>
+        <ol>
+          <li>
+            <strong>Usa una fuente de luz</strong> (LED infrarrojo o verde, a
+            veces rojo):
+            <ul>
+              <li>
+                Se coloca en contacto con la piel (dedo, muñeca, lóbulo de la
+                oreja).
+              </li>
+              <li>Emite luz hacia el tejido.</li>
+            </ul>
+          </li>
+          <li>
+            <strong>Interacción con la sangre y tejidos:</strong>
+            <ul>
+              <li>
+                Parte de la luz se absorbe por la hemoglobina en la sangre.
+              </li>
+              <li>Parte se refleja o atraviesa el tejido.</li>
+            </ul>
+          </li>
+          <li>
+            <strong>Fotodetector:</strong>
+            <ul>
+              <li>Registra la luz transmitida o reflejada.</li>
+              <li>
+                La cantidad de luz detectada cambia en función de la cantidad de
+                sangre presente en los vasos.
+              </li>
+            </ul>
+          </li>
+          <li>
+            <strong>Señal PPG:</strong>
+            <ul>
+              <li>
+                <strong>AC (pulsátil):</strong> varía con cada latido cardíaco →
+                refleja la onda de pulso arterial.
+              </li>
+              <li>
+                <strong>DC (lenta):</strong> depende de factores como
+                respiración, tono vascular o temperatura.
+              </li>
+            </ul>
+          </li>
+        </ol>
+
+        <h3>Existen 2 tipos de fotopletismógrafos:</h3>
+        <ul>
+          <li>
+            <strong>Transmisivo:</strong> la luz pasa a través del tejido (ej.
+            dedo en un oxímetro de pulso).
+          </li>
+          <li>
+            <strong>Reflectivo:</strong> el detector está al lado del LED y mide
+            la luz reflejada (ej. relojes inteligentes).
+          </li>
+        </ul>
+
+        <h3>Sus principales aplicaciones son las siguientes:</h3>
+        <ol>
+          <li>Medición de frecuencia cardíaca (pulso).</li>
+          <li>
+            Oxímetro de pulso (SpO₂): usando dos longitudes de onda (rojo e
+            infrarrojo) se estima la saturación de oxígeno en la sangre.
+          </li>
+          <li>Variabilidad de la frecuencia cardíaca (HRV).</li>
+          <li>
+            Estimación de presión arterial (usando algoritmos y calibraciones).
+          </li>
+          <li>Detección de arritmias.</li>
+          <li>Monitorización del sueño.</li>
+        </ol>
+      </div>
+
+      <hr />
+      <button
+        class="new_styled"
+        id="toggleBuild"
+        aria-pressed="false"
+        onclick="buildBlock()"
+      >
+        Construye tu Propio Equipo
+      </button>
+      <br />
+      <div id="buildBlock">
+        <h3>
+          Hay dos opciones. La primera usa un amplificador externo y la segunda
+          usa un amplificador interno del módulo ESP32. Para la primera opción
+          se requiere comprar un sensor PPG, un módulo de conversión ADC (del
+          inglés Analog to Digital Converter) modelo ADS1115 y un
+          microcontrolador ESP32, como se muestra en la figura siguiente:
+        </h3>
+        <center>
+          <img src="ppg.png" style="width: 80%" />
+        </center>
+
+        <center>
+          <h3>Conexiones para la primera opción</h3>
+
+          <table border="1" cellpadding="6" cellspacing="0">
+            <thead>
+              <tr>
+                <th>Componente</th>
+                <th>Pin</th>
+                <th>Conexión</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Sensor PPG</td>
+                <td>+3.3V</td>
+                <td>3.3V del ESP32</td>
+              </tr>
+              <tr>
+                <td>Sensor PPG</td>
+                <td>GND</td>
+                <td>GND común (ESP32 y ADS1115)</td>
+              </tr>
+              <tr>
+                <td>Sensor PPG</td>
+                <td>Señal</td>
+                <td>A0 del ADS1115</td>
+              </tr>
+              <tr>
+                <td>ADS1115</td>
+                <td>VDD</td>
+                <td>3.3V del ESP32</td>
+              </tr>
+              <tr>
+                <td>ADS1115</td>
+                <td>GND</td>
+                <td>GND común</td>
+              </tr>
+              <tr>
+                <td>ADS1115</td>
+                <td>SDA</td>
+                <td>GPIO21 del ESP32</td>
+              </tr>
+              <tr>
+                <td>ADS1115</td>
+                <td>SCL</td>
+                <td>GPIO22 del ESP32</td>
+              </tr>
+              <tr>
+                <td>ADS1115</td>
+                <td>A0</td>
+                <td>Señal del sensor PPG</td>
+              </tr>
+              <tr>
+                <td>ADS1115</td>
+                <td>ADDR</td>
+                <td>GND (dirección I²C 0x48)</td>
+              </tr>
+              <tr>
+                <td>ESP32 DevKit v1</td>
+                <td>GPIO21 (SDA)</td>
+                <td>SDA del ADS1115</td>
+              </tr>
+              <tr>
+                <td>ESP32 DevKit v1</td>
+                <td>GPIO22 (SCL)</td>
+                <td>SCL del ADS1115</td>
+              </tr>
+              <tr>
+                <td>ESP32 DevKit v1</td>
+                <td>3.3V</td>
+                <td>VDD del sensor y ADS1115</td>
+              </tr>
+              <tr>
+                <td>ESP32 DevKit v1</td>
+                <td>GND</td>
+                <td>GND común</td>
+              </tr>
+            </tbody>
+          </table>
+        </center>
+        <h3>
+          La segunda opción es más simple ya que se puede construir usando el
+          ADC interno del ESP32 como se ilustra en la figura siguiente. La
+          lectura de la señal en este caso es menos precisa que la que se
+          obtiene con el ADC externo ADS1115.
+        </h3>
+        <center>
+          <img src="pulse_sensor.png" style="width: 80%" />
+        </center>
+
+        <center>
+          <h3>Las conexiones para la segunda opción son:</h3>
+
+          <table border="1" cellpadding="6" cellspacing="0">
+            <thead>
+              <tr>
+                <th>Componente</th>
+                <th>Pin</th>
+                <th>Conexión</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Sensor PPG</td>
+                <td>+3.3V</td>
+                <td>+3.3V del ESP32</td>
+              </tr>
+              <tr>
+                <td>Sensor PPG</td>
+                <td>GND</td>
+                <td>GND del ESP32</td>
+              </tr>
+              <tr>
+                <td>Sensor PPG</td>
+                <td>Señal</td>
+                <td>GPIO34 del ESP32</td>
+              </tr>
+              <tr>
+                <td>ESP32 DevKit v1</td>
+                <td>3.3V</td>
+                <td>VDD del sensor</td>
+              </tr>
+              <tr>
+                <td>ESP32 DevKit v1</td>
+                <td>GND</td>
+                <td>GND común</td>
+              </tr>
+            </tbody>
+          </table>
+        </center>
+      </div>
+      <hr />
+
+      <button
+        class="new_styled"
+        id="toggleCode"
+        aria-pressed="false"
+        onclick="codeBlock()"
+      >
+        Código del ESP32
+      </button>
+      <br />
+      <div id="codeBlock">
+        <h3>Primera Opción.</h3>
+        <p>
+          Codigo para programar el microcontolador ESP32 usando
+          <a href="https://www.arduino.cc/en/software/">Arduino IDE</a>. Este
+          código permite leer la señal del sensor PPG usando el ADC externo
+          ADS1115 de 16 bits a razón de cerca de 860 Hz y mandar los datos a la
+          PC a través del puerto serie a 230400 baudios.
+        </p>
+        <pre
+          id="code1"
+          style="background-color: lightblue; margin-left: 5%; margin-right: 5%"
+        >
+      
+      
+      #include &lt;Adafruit_ADS1X15.h&gt;
+
+      Adafruit_ADS1115 ads;
+      unsigned long prevMicros = 0;
+
+      void setup() {
+        Serial.begin(230400);
+
+        Wire.begin();
+        Wire.setClock(400000);  // más seguro que 800 kHz
+
+        if (!ads.begin(0x48)) {
+          Serial.println("⚠️ Error: No se encontró el ADS1115 en 0x48");
+          while (1);
+        }
+
+        ads.setGain(GAIN_TWOTHIRDS);                 // ±6.144 V
+        //GAIN_TWOTHIRDS = ±6.144 V → 0.1875 mV por cuenta.
+        ads.setDataRate(RATE_ADS1115_860SPS);        // 860 muestras por segundo
+        ads.startADCReading(ADS1X15_REG_CONFIG_MUX_SINGLE_0, true); // canal A0
+      }
+
+      void loop() {
+        unsigned long microsNow = micros();
+
+        // Leer A0
+        int16_t sensor = ads.getLastConversionResults();
+        // Cada cuenta equivale a 0.1875 mV en GAIN_TWOTHIRDS
+        float volts = sensor * 0.1875F / 1000.0F;
+        // Iniciar nueva conversión sin esperar
+        ads.startADCReading(ADS1X15_REG_CONFIG_MUX_SINGLE_0, true);
+
+        // Enviar datos por Serial
+        //Serial.print(sensor);
+        Serial.print(volts, 6);  // Manda lectura en voltios con 6 decimales
+        Serial.print(" ");
+        Serial.println(microsNow / 1000.0, 3);  // tiempo en ms con 3 decimales
+      }
+</pre
+        >
+        <h3>Segunda Opción.</h3>
+        <p>
+          Codigo para programar el microcontolador ESP32. Este código permite
+          leer la señal del sensor PPG usando el ADC interno de 12 bits a razón
+          de cerca de 1000 Hz y mandar los datos a la PC a través del puerto
+          serie a 230400 baudios.
+        </p>
+
+        <pre
+          id="code2"
+          style="background-color: lightblue; margin-left: 5%; margin-right: 5%"
+        >
+
+      // Código para leer un sensor PPG usando ADC interno del ESP32
+
+      const int adcPin = 34;   // Pin ADC donde conectas la señal
+      const float Vref = 3.3;  // Voltaje de referencia (3.3 V)
+
+      void setup() {
+        Serial.begin(230400);
+
+        // Configurar resolución (ESP32: 9 a 12 bits, default 12)
+        analogReadResolution(12);  // 12 bits = 0-4095
+        analogSetAttenuation(ADC_11db); 
+        // ADC_11db da un rango aprox. 0 – 3.6 V (útil si tu sensor se acerca a 3.3V)
+
+        Serial.println("Iniciando lectura ADC interno...");
+      }
+
+      void loop() {
+        unsigned long microsNow = micros();
+
+        // Leer el valor crudo (0-4095)
+        int raw = analogRead(adcPin);
+
+        // Convertir a voltios
+        float volts = (raw / 4095.0) * Vref;
+
+        // Enviar datos por Serial
+        Serial.print(volts, 6);  // en voltios con 6 decimales
+        Serial.print(" ");
+        Serial.println(microsNow / 1000.0, 3);  // tiempo en ms
+      }
+      
+</pre
+        >
+
+        <br />
+      </div>
+      <hr />
+
+      <button
+        class="new_styled"
+        id="processBtn"
+        aria-pressed="false"
+        onclick="processBlock()"
+      >
+        Procesamiento de la Señal
+      </button>
+      <br />
+      <div id="processBlock">
+        <br />
+        <h3>Filtro Pasa Bajos</h3>
+          <br />
+          <p>
+            El filtro <strong>butterworthLowPass</strong> implementado en
+            JavaScript en la sección siguiente es una forma eficiente de
+            suavizar señales ruidosas mediante un promedio exponencial, también
+            llamado <em>filtro paso bajo de primer orden</em>, es ideal para
+            eliminar componentes de alta frecuencia en señales como PPG o ECG.
+            El parámetro <code>alpha</code> controla la respuesta del filtro:
+            valores cercanos a 1 permiten seguir de cerca la señal original,
+            mientras que valores más bajos producen una salida más estable pero
+            con mayor retardo. Este tipo de filtrado es útil en aplicaciones
+            biomédicas y educativas donde se requiere una visualización clara y
+            continua de la señal.
+          </p>
+        
+        <br />
+        <h3>Media Móvil</h3>
+
+          <p>
+            La <strong>media móvil</strong>, también implementada en la
+            siguiente sección, es una técnica de filtrado utilizada para
+            suavizar señales y eliminar fluctuaciones rápidas o ruido. Consiste
+            en calcular el promedio de un conjunto de valores consecutivos
+            dentro de una ventana deslizante, lo que permite obtener una versión
+            más estable de la señal original. Este método es especialmente útil
+            en aplicaciones biomédicas, como el análisis de señales PPG o ECG,
+            donde se busca resaltar tendencias generales sin perder la forma de
+            onda. El tamaño de la ventana determina el grado de suavizado:
+            ventanas más grandes ofrecen mayor estabilidad pero pueden atenuar
+            detalles importantes, mientras que ventanas pequeñas conservan más
+            fidelidad a la señal original.
+          </p>
+        
+        <br />
+      </div>
+
+      <hr />
+
+      <button
+        class="new_styled"
+        id="connectBtn"
+        aria-pressed="false"
+        onclick="connectBlock()"
+      >
+        Conecta tu Fotopletismógrafo
+      </button>
+      <br />
+      <div id="connectBlock">
+        <br />
+        <input
+          class="favorite styled"
+          type="button"
+          id="SerialConnect"
+          value="Conectar"
+          onclick="connectSerial()"
+          ;
+        />
+        <label style="font-size: 15pt"> Número de Puntos en la Gráfica: </label>
+        <input id="points_max" style="width: 5%" value="5000" type="text" />
+
+        <span id="samplingRate" style="font-size: 15pt"></span>
+
+        <button class="new_styled" id="clearPlot" onclick="clearPlot()">
+          Borrar
+        </button>
+        <input
+          class="favorite styled"
+          type="button"
+          id="sensor1"
+          value="Detener"
+        />
+
+        <br />
+
+        <div
+          id="plot_dataXY"
+          style="border: solid 5px #003b5c; width: 100%"
+        ></div>
+        <label style="font-size: 15pt"> Alfa: </label>
+        <input id="alpha" style="width: 5%" value=".8" type="text" />
+        <label style="font-size: 15pt"> Ventana Media Móvil: </label>
+        <input id="mediaMovil" style="width: 5%" value="4" type="text" />
+        <label for="scaled" style="font-size: 15pt">Escala en Sigmas</label>
+        <input type="checkbox" id="scaled" />
+      </div>
+
+      <hr />
+    </div>
+  </body>
+  <script src="./PPG.js"></script>
+</html>
