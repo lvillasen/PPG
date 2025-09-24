@@ -5,4 +5,4 @@ Web app to visualize data from a photoplethysmograph connected to the serial por
 
 ## Live Demo
 
-https://ciiec.buap.mx/PPS
+https://ciiec.buap.mx/PPG
